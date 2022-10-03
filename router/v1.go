@@ -12,5 +12,6 @@ func v1Apis(group *echo.Group) {
 
 	p1 := group.Group("/p1")
 	p1.POST("/register", v1.Controller().CreateUser)
+	p1.POST("/login", v1.Controller().LoginUser)
 
 }

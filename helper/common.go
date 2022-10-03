@@ -1,8 +1,10 @@
 package helper
 
 import (
-	"go.mongodb.org/mongo-driver/mongo"
+	"strings"
 )
 
-var client *mongo.Client
-var collection *mongo.Collection
+func Purify(str *string) string {
+	purifiedString := strings.Trim(*str, " ")
+	return purifiedString
+}

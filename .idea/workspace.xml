@@ -5,29 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="64a99b33-ff05-4965-885a-b2929ed3489c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/project1.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api/v1/controller.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/const.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constant/default.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constant/response.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/crypto/hashPassword.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/db.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dto/response.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dto/user.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/helper/common.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/helper/createUserHelper.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/response/response.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/router/routes.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/router/v1.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dto/jwt.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/helper/loginUserHelper.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logger/log.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/v1/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/v1/controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/const.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/const.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/db.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dto/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/dto/response.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dto/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/dto/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/helper/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/helper/common.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/helper/createUserHelper.go" beforeDir="false" afterPath="$PROJECT_DIR$/helper/createUserHelper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router/v1.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/v1.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,5 +106,16 @@
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/database/db.go</url>
+          <line>21</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

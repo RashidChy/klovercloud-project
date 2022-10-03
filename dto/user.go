@@ -6,3 +6,8 @@ type User struct {
 	SlackHook string `json:"SlackHook"`
 	Password  string `json:"Password"`
 }
+
+type LoginInput struct {
+	Email    string `json:"Email"`
+	Password string `json:"Password"`
+}

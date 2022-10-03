@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
-	"log"
 	"net/http"
+	"project1/config"
 	"project1/crypto"
 	"project1/database"
 	"project1/dto"
+
+	"github.com/rs/zerolog/log"
 	"regexp"
 	"strings"
 	"time"
@@ -30,7 +32,7 @@ func CreateUser() *createUserHelper {
 	return new(createUserHelper)
 }
 
-func (t *createUserHelper) Execute(e echo.Context) error {
+func (createUserHelper) Execute(e echo.Context) error {
 	this := new(cuhs)
 	// "this" is just a createUser helper struct object
 
@@ -46,31 +48,23 @@ func (t *createUserHelper) Execute(e echo.Context) error {
 		return err
 	}
 
-	err = this.conndectingDB()
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
 	err = this.doPerform(e)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	return e.JSON(http.StatusOK, dto.Resp{true, "successful", this})
+	return e.JSON(http.StatusOK, dto.Resp{Message: "successful", Data: this.input})
 }
 
-///
-
+// /
 func (t *cuhs) init(e echo.Context) error {
 	fmt.Println("initialized")
 	var temp = new(dto.User)
 	err := e.Bind(temp)
 	if err != nil {
-		return e.JSON(http.StatusBadRequest, dto.Resp{false, "Data Bind Error", nil})
-		//response.Helper().ErrorResponse(e, http.StatusBadRequest, constant.INVALID_INPUT, "", err.Error())
-		//return errors.New("data bind error")
+		log.Error().Err(err).Msg("init bind error")
+		return e.JSON(http.StatusBadRequest, dto.Resp{Message: "Data Bind Error"})
 	} else {
 		t.input = *temp
 	}
@@ -81,69 +75,78 @@ func (t *cuhs) init(e echo.Context) error {
 func (t *cuhs) checkInputs(e echo.Context) error {
 
 	if t.input.Email == "" {
-		return e.JSON(http.StatusBadRequest, dto.Resp{false, "email cannot be empty", nil})
+		log.Warn().Msg("input email empty")
+		return e.JSON(http.StatusBadRequest, dto.Resp{Message: "email cannot be empty"})
 	} else {
 		str := strings.ReplaceAll(t.input.Email, " ", "")
 
 		emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
 		if emailRegex.MatchString(str) != true {
-			return e.JSON(http.StatusBadRequest, dto.Resp{false, "invalid email", nil})
+			log.Warn().
+				Interface("email", t.input.Email).
+				Msg("input email not valid")
+			return e.JSON(http.StatusBadRequest, dto.Resp{Message: "invalid email"})
 		}
 		t.Email = str
 	}
 
 	if t.input.Name == "" {
-		return e.JSON(http.StatusBadRequest, dto.Resp{false, "name cannot be empty", nil})
+		log.Warn().Msg("input name empty")
+		return e.JSON(http.StatusBadRequest, dto.Resp{Message: "name cannot be empty"})
 	} else {
-		str := strings.Trim(t.input.Name, " ")
+		str := Purify(&t.input.Name)
+		if str == "" {
+			log.Warn().Msg("input name only contains space")
+			return e.JSON(http.StatusBadRequest, dto.Resp{Message: "input name only contains space"})
+		}
 		t.Name = str
 	}
 
 	if t.input.SlackHook == "" {
-		return e.JSON(http.StatusBadRequest, dto.Resp{false, "Slack hook is required", nil})
+		log.Warn().Msg("slack hook empty")
+		return e.JSON(http.StatusBadRequest, dto.Resp{Message: "Slack hook is required"})
 	} else {
-		str := strings.Trim(t.input.SlackHook, " ")
+		str := Purify(&t.input.SlackHook)
+		if str == "" {
+			log.Warn().Msg("slack hook empty")
+			return e.JSON(http.StatusBadRequest, dto.Resp{Message: "Slack hook is required"})
+		}
 		t.SlackHook = str
 	}
 
 	if t.input.Password == "" {
-		return e.JSON(http.StatusBadRequest, dto.Resp{false, "Password cannot be empty", nil})
+		log.Warn().Msg("input password empty")
+		return e.JSON(http.StatusBadRequest, dto.Resp{Message: "Password cannot be empty"})
 	} else {
-		//warning := "Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
-		//passwordRegex := regexp.MustCompile(`.{8,}", "[a-z]", "[A-Z]", "[0-9]", "[^\\d\\w]`)
-		//if passwordRegex.MatchString(t.input.Password) != true {
-		//	return e.JSON(http.StatusBadRequest, dto.Resp{false, warning, nil})
-		//}
-		t.Password = t.input.Password
+		password := Purify(&t.input.Password)
+		if len(password) < 8 {
+			log.Warn().Msg("password must be len 8")
+			return e.JSON(http.StatusBadRequest, dto.Resp{Message: "password len minimum 8 required"})
+		}
+		t.Password = password
 	}
 
 	return nil
 
 }
-
-func (t *cuhs) conndectingDB() error {
-
-	client, err := database.InitDBConnection()
-	if err != nil {
-		log.Fatalln("[ERROR] mongo client error: ", err.Error())
-	}
-	collection = client.Database("project1").Collection("users")
-	return nil
-}
-
 func (t *cuhs) doPerform(e echo.Context) error {
-
-	var ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	collection := database.MongoClient.Database(config.DATABASE_NAME).Collection(config.USER_COLLECTION_NAME)
+	var ctx, cancel = context.WithTimeout(context.Background(), time.Millisecond*500)
 	defer cancel()
 
 	query := bson.M{"email": t.Email}
 	count, err := collection.CountDocuments(context.TODO(), query)
 
 	if err != nil {
-		log.Fatalln("[ERROR] mongo client error: ", err.Error())
+		log.Error().Err(err).Msg("database read error")
+		return e.JSON(http.StatusInternalServerError, nil)
 	}
 	if count != 0 {
-		return e.JSON(http.StatusBadRequest, dto.Resp{false, "User Already exists or the email is already taken", nil})
+		log.Warn().
+			Int64("count", count).
+			Str("email", t.Email).
+			Msg("user already exist")
+		return e.JSON(http.StatusBadRequest, dto.Resp{Message: "User Already exists or the email is already taken"})
 	}
 
 	// inserting final user data to dto
@@ -159,14 +162,14 @@ func (t *cuhs) doPerform(e echo.Context) error {
 
 	_, err = collection.InsertOne(ctx, user)
 	if err != nil {
-		log.Println("[ERROR] Database insert error: ", err.Error())
+		log.Error().
+			Err(err).
+			Interface("payload", user).
+			Msg("collection insert error")
+
+		return e.JSON(http.StatusInternalServerError, nil)
 	}
 
-	fmt.Println("user : ", user)
-
-	// emptying database info from the common file in helper
-	collection = nil
-	client = nil
-
+	log.Info().Interface("payload", user).Msg("user insert successful")
 	return nil
 }
